@@ -19,7 +19,7 @@ test('real MongoDB: authenticated CRUD, isolation, indexes and persistence', {
   try {
     server = createApp(repo, { jwtSecret: randomUUID() }).listen(0);
     await new Promise((resolve) => server.once('listening', resolve));
-    const base = `http://localhost:${server.address().port}/api`;
+    const base = `http://localhost:${server.address().port}/api/budgeteer`;
     const send = (method, path, body, token) => fetch(`${base}${path}`, {
       method,
       headers: {

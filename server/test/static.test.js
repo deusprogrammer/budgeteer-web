@@ -26,12 +26,17 @@ test('production serves the client, SPA routes, and assets without hiding API er
     const asset = await fetch(`${base}/app.js`);
     assert.equal(asset.status, 200);
     assert.equal(await asset.text(), 'console.log("Budgeteer");');
-    const missingApi = await fetch(`${base}/api/missing`);
+    const missingApi = await fetch(`${base}/api/budgeteer/missing`);
     assert.equal(missingApi.status, 404);
     assert.deepEqual(await missingApi.json(), { error: 'API endpoint not found' });
-    const protectedApi = await fetch(`${base}/api/bills`);
+    const protectedApi = await fetch(`${base}/api/budgeteer/bills`);
     assert.equal(protectedApi.status, 401);
-    assert.deepEqual(await (await fetch(`${base}/api/health`)).json(), { status: 'ok' });
+    assert.deepEqual(await (await fetch(`${base}/api/budgeteer/health`)).json(), { status: 'ok' });
+    for (const route of ['/api/health', '/api/auth/login', '/api/bills']) {
+      const response = await fetch(`${base}${route}`);
+      assert.equal(response.status, 404);
+      assert.deepEqual(await response.json(), { error: 'API endpoint not found' });
+    }
   } finally {
     if (server) await new Promise((resolve) => server.close(resolve));
     await rm(directory, { recursive: true, force: true });

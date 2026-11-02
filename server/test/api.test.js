@@ -50,7 +50,7 @@ const password = 'correct horse battery staple';
 before(async () => {
   server = createApp(new InMemoryRepository(), { jwtSecret }).listen(0);
   await new Promise((r) => server.once('listening', r));
-  base = `http://localhost:${server.address().port}/api`;
+  base = `http://localhost:${server.address().port}/api/budgeteer`;
   const registration = await send('POST', '/auth/register', { username: 'owner', password }, null);
   assert.equal(registration.status, 201);
   token = (await registration.json()).token;
@@ -183,7 +183,7 @@ test('authentication rate limit allows 30 requests and blocks the 31st across lo
   const limitedServer = createApp(new InMemoryRepository(), { jwtSecret }).listen(0);
   await new Promise((resolve) => limitedServer.once('listening', resolve));
   try {
-    const url = `http://localhost:${limitedServer.address().port}/api/auth`;
+    const url = `http://localhost:${limitedServer.address().port}/api/budgeteer/auth`;
     for (let attempt = 0; attempt < 30; attempt += 1) {
       const path = attempt % 2 ? '/login' : '/register';
       const response = await fetch(`${url}${path}`, {

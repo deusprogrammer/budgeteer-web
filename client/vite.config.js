@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': process.env.API_URL || 'http://localhost:3001',
+      '/api/budgeteer': process.env.API_URL || 'http://localhost:3001',
     },
   },
 });

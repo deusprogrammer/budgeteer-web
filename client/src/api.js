@@ -14,7 +14,7 @@ async function request(method, path, body) {
   const headers = {};
   if (body) headers['Content-Type'] = 'application/json';
   if (token) headers.Authorization = `Bearer ${token}`;
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`/api/budgeteer${path}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,

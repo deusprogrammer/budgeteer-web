@@ -18,7 +18,7 @@ test('login and registration use public JSON endpoints', async () => {
   const credentials = { username: 'alice', password: 'a long password' };
   await api.auth.login(credentials);
   await api.auth.register(credentials);
-  assert.deepEqual(requests.map((request) => request.url), ['/api/auth/login', '/api/auth/register']);
+  assert.deepEqual(requests.map((request) => request.url), ['/api/budgeteer/auth/login', '/api/budgeteer/auth/register']);
   for (const request of requests) {
     assert.equal(request.method, 'POST');
     assert.equal(request.headers.Authorization, undefined);
@@ -38,7 +38,7 @@ test('budget requests attach tokens; signing out removes them', async () => {
   setSessionToken(null);
   await api.bills.list();
   assert.equal(requests[0].headers.Authorization, 'Bearer jwt');
-  assert.equal(requests[1].url, '/api/bills/bill%3A%3A1');
+  assert.equal(requests[1].url, '/api/budgeteer/bills/bill%3A%3A1');
   assert.equal(requests[2].headers.Authorization, undefined);
 });
 

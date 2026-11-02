@@ -45,15 +45,15 @@ export function createApp(repo, { jwtSecret, staticDirectory }) {
   app.use(cors());
   app.use(express.json({ limit: '16kb' }));
   app.use(auth.initialize);
-  app.use('/api/auth', (_req, res, next) => {
+  app.use('/api/budgeteer/auth', (_req, res, next) => {
     res.set('Cache-Control', 'no-store');
     next();
   }, auth.router);
 
-  app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
+  app.get('/api/budgeteer/health', (_req, res) => res.json({ status: 'ok' }));
 
   for (const [path, resource] of Object.entries(resources)) {
-    app.use(`/api/${path}`, auth.requireUser, resourceRouter(repo, resource));
+    app.use(`/api/budgeteer/${path}`, auth.requireUser, resourceRouter(repo, resource));
   }
 
   app.use('/api', (_req, res) => {

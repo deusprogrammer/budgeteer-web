@@ -50,7 +50,7 @@ npm run install:all
 # Terminal 1 - API on http://localhost:3001 (reads server/.env)
 npm run dev:server
 
-# Terminal 2 - UI on http://localhost:5173 (proxies /api to the server)
+# Terminal 2 - UI on http://localhost:5173/budgeteer/ (proxies /api/budgeteer to the server)
 npm run dev:client
 ```
 
@@ -69,7 +69,8 @@ deployment should use a shared limiter store. If deploying behind a reverse prox
 Use HTTPS outside local development, database authentication, and a production secret.
 
 Set `API_URL` when starting the client if the API is not on `http://localhost:3001`.
-`npm run build` builds the client. With `NODE_ENV=production`, Express serves `client/dist` alongside `/api`.
+`npm run build` builds the client. With `NODE_ENV=production`, Express serves `client/dist` alongside `/api/budgeteer`.
+When deploying behind nginx, proxy `/api/budgeteer/` to Express without stripping that prefix.
 
 ## Deploying with Docker Compose
 
@@ -128,13 +129,13 @@ test database** afterwards. It does not write to the configured app database.
 
 ## REST API
 
-`GET /api/health` is public. Authentication endpoints:
+`GET /api/budgeteer/health` is public. Authentication endpoints:
 
 | Method | Path | Body / response |
 | ------ | ---- | --------------- |
-| POST | `/api/auth/register` | `{ username, password }` -> `{ user: { id, username }, token }` (201) |
-| POST | `/api/auth/login` | `{ username, password }` -> `{ user: { id, username }, token }` |
-| GET | `/api/auth/me` | Bearer token required; returns `{ id, username }` |
+| POST | `/api/budgeteer/auth/register` | `{ username, password }` -> `{ user: { id, username }, token }` (201) |
+| POST | `/api/budgeteer/auth/login` | `{ username, password }` -> `{ user: { id, username }, token }` |
+| GET | `/api/budgeteer/auth/me` | Bearer token required; returns `{ id, username }` |
 
 All budget endpoints require `Authorization: Bearer <token>` and only access the authenticated user's data.
 Another user's document IDs return 404 on update/delete. Supplied ownership fields are ignored.
@@ -143,18 +144,18 @@ authentication requests 429. Errors are JSON objects with an `error` message.
 
 | Method | Path | Body |
 | ------ | ---- | ---- |
-| GET | `/api/transactions` | |
-| POST | `/api/transactions` | `{ amount, category?, timestamp? }` (negative = credit) |
-| PUT | `/api/transactions/:id` | same as POST |
-| DELETE | `/api/transactions/:id` | |
-| GET | `/api/bills` | |
-| POST | `/api/bills` | `{ name, amount, leftToPay, dayOfMonth }` |
-| PUT | `/api/bills/:id` | same as POST |
-| DELETE | `/api/bills/:id` | |
-| GET | `/api/paydays` | |
-| POST | `/api/paydays` | `{ name, amount, exampleDate: "YYYY-MM-DD" }` |
-| PUT | `/api/paydays/:id` | same as POST |
-| DELETE | `/api/paydays/:id` | |
+| GET | `/api/budgeteer/transactions` | |
+| POST | `/api/budgeteer/transactions` | `{ amount, category?, timestamp? }` (negative = credit) |
+| PUT | `/api/budgeteer/transactions/:id` | same as POST |
+| DELETE | `/api/budgeteer/transactions/:id` | |
+| GET | `/api/budgeteer/bills` | |
+| POST | `/api/budgeteer/bills` | `{ name, amount, leftToPay, dayOfMonth }` |
+| PUT | `/api/budgeteer/bills/:id` | same as POST |
+| DELETE | `/api/budgeteer/bills/:id` | |
+| GET | `/api/budgeteer/paydays` | |
+| POST | `/api/budgeteer/paydays` | `{ name, amount, exampleDate: "YYYY-MM-DD" }` |
+| PUT | `/api/budgeteer/paydays/:id` | same as POST |
+| DELETE | `/api/budgeteer/paydays/:id` | |
 
 Budget documents use MongoDB's `documents` collection, with string `_id` keys such as `bill::<uuid>`,
 a `type` discriminator, and a `userId`. Responses preserve the original `{ id, ...fields }` API shape and
