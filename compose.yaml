@@ -1,0 +1,24 @@
+services:
+  budgeteer:
+    build: .
+    ports:
+      - "${WEB_PORT:-8080}:3001"
+    env_file:
+      - ./server/.env
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      MONGODB_URL: mongodb://10.0.0.244/
+      MONGODB_DATABASE: budgeteer
+    restart: unless-stopped
+    init: true
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3001/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
